@@ -19,8 +19,6 @@ import org.junit.Test;
 import picocli.CommandLine.Help;
 import picocli.CommandLine.Help.Column;
 import picocli.CommandLine.Help.TextTable;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Usage;
 
 import java.awt.Point;
@@ -63,7 +61,7 @@ public class CommandLineHelpTest {
     public void testUsageAnnotationDetailedUsage() throws Exception {
         @Usage(detailedUsageHeader = true)
         class Params {
-            @Option(names = {"-f", "--file"}, required = true, description = "the file to use") File file;
+            @CommandLine.Parameter(names = {"-f", "--file"}, required = true, description = "the file to use") File file;
         }
         String result = usageString(Params.class);
         assertEquals(format("" +
@@ -76,7 +74,7 @@ public class CommandLineHelpTest {
     public void testUsageSeparator() throws Exception {
         @Usage(separator = "=", detailedUsageHeader = true)
         class Params {
-            @Option(names = {"-f", "--file"}, required = true, description = "the file to use") File file;
+            @CommandLine.Parameter(names = {"-f", "--file"}, required = true, description = "the file to use") File file;
         }
         String result = usageString(Params.class);
         assertEquals(format("" +
@@ -104,9 +102,9 @@ public class CommandLineHelpTest {
     @Test
     public void testSortByShortestOptionNameComparator() throws Exception {
         class App {
-            @Option(names = {"-t", "--aaaa"}) boolean aaaa;
-            @Option(names = {"--bbbb", "-k"}) boolean bbbb;
-            @Option(names = {"-c", "--cccc"}) boolean cccc;
+            @CommandLine.Parameter(names = {"-t", "--aaaa"}) boolean aaaa;
+            @CommandLine.Parameter(names = {"--bbbb", "-k"}) boolean bbbb;
+            @CommandLine.Parameter(names = {"-c", "--cccc"}) boolean cccc;
         }
         Field[] fields = fields(App.class, "aaaa", "bbbb", "cccc"); // -tkc
         Arrays.sort(fields, new Help.SortByShortestOptionName());
@@ -117,13 +115,13 @@ public class CommandLineHelpTest {
     @Test
     public void testSortByOptionArityAndNameComparator_sortsByMaxThenMinThenName() throws Exception {
         class App {
-            @Option(names = {"-t", "--aaaa"}) boolean tImplicitArity0;
-            @Option(names = {"-e", "--EEE"}, arity = "1") boolean explicitArity1;
-            @Option(names = {"--bbbb", "-k"}) boolean kImplicitArity0;
-            @Option(names = {"--AAAA", "-a"}) int aImplicitArity1;
-            @Option(names = {"--BBBB", "-b"}) String[] bImplicitArity0_n;
-            @Option(names = {"--ZZZZ", "-z"}, arity = "1..3") String[] zExplicitArity1_3;
-            @Option(names = {"-f", "--ffff"}) boolean fImplicitArity0;
+            @CommandLine.Parameter(names = {"-t", "--aaaa"}) boolean tImplicitArity0;
+            @CommandLine.Parameter(names = {"-e", "--EEE"}, arity = "1") boolean explicitArity1;
+            @CommandLine.Parameter(names = {"--bbbb", "-k"}) boolean kImplicitArity0;
+            @CommandLine.Parameter(names = {"--AAAA", "-a"}) int aImplicitArity1;
+            @CommandLine.Parameter(names = {"--BBBB", "-b"}) String[] bImplicitArity0_n;
+            @CommandLine.Parameter(names = {"--ZZZZ", "-z"}, arity = "1..3") String[] zExplicitArity1_3;
+            @CommandLine.Parameter(names = {"-f", "--ffff"}) boolean fImplicitArity0;
         }
         Field[] fields = fields(App.class, "tImplicitArity0", "explicitArity1", "kImplicitArity0",
                 "aImplicitArity1", "bImplicitArity0_n", "zExplicitArity1_3", "fImplicitArity0");
@@ -147,19 +145,19 @@ public class CommandLineHelpTest {
     @Test
     public void testMinimalOptionRenderer_rendersFirstDeclaredOptionNameAndDescription() {
         class Example {
-            @Option(names = {"---long", "-L"}, description = "long description") String longField;
-            @Option(names = {"-b", "-a", "--alpha"}, description = "other") String otherField;
+            @CommandLine.Parameter(names = {"---long", "-L"}, description = "long description") String longField;
+            @CommandLine.Parameter(names = {"-b", "-a", "--alpha"}, description = "other") String otherField;
         }
         Help.IOptionRenderer renderer = Help.createMinimalOptionRenderer();
         Help.IParameterLabelRenderer parameterRenderer = Help.createDefaultParameterRenderer(" ");
         Help help = new Help(Example.class);
         Field field = help.optionFields.get(0);
-        String[][] row1 = renderer.render(field.getAnnotation(Option.class), field, parameterRenderer);
+        String[][] row1 = renderer.render(field.getAnnotation(CommandLine.Parameter.class), field, parameterRenderer);
         assertEquals(1, row1.length);
         assertArrayEquals(new String[]{"---long <longField>", "long description"}, row1[0]);
 
         field = help.optionFields.get(1);
-        String[][] row2 = renderer.render(field.getAnnotation(Option.class), field, parameterRenderer);
+        String[][] row2 = renderer.render(field.getAnnotation(CommandLine.Parameter.class), field, parameterRenderer);
         assertEquals(1, row2.length);
         assertArrayEquals(new String[]{"-b <otherField>", "other"}, row2[0]);
     }
@@ -172,19 +170,19 @@ public class CommandLineHelpTest {
     @Test
     public void testDefaultOptionRenderer_rendersShortestOptionNameThenOtherOptionNamesAndDescription() {
         class Example {
-            @Option(names = {"---long", "-L"}, description = "long description") String longField;
-            @Option(names = {"-b", "-a", "--alpha"}, description = "other") String otherField;
+            @CommandLine.Parameter(names = {"---long", "-L"}, description = "long description") String longField;
+            @CommandLine.Parameter(names = {"-b", "-a", "--alpha"}, description = "other") String otherField;
         }
         Help.IOptionRenderer renderer = Help.createDefaultOptionRenderer();
         Help.IParameterLabelRenderer parameterRenderer = Help.createDefaultParameterRenderer(" ");
         Help help = new Help(Example.class);
         Field field = help.optionFields.get(0);
-        String[][] row1 = renderer.render(field.getAnnotation(Option.class), field, parameterRenderer);
+        String[][] row1 = renderer.render(field.getAnnotation(CommandLine.Parameter.class), field, parameterRenderer);
         assertEquals(1, row1.length);
         assertArrayEquals(Arrays.toString(row1[0]), new String[]{"-L", ",", "---long <longField>", "long description"}, row1[0]);
 
         field = help.optionFields.get(1);
-        String[][] row2 = renderer.render(field.getAnnotation(Option.class), field, parameterRenderer);
+        String[][] row2 = renderer.render(field.getAnnotation(CommandLine.Parameter.class), field, parameterRenderer);
         assertEquals(1, row2.length);
         assertArrayEquals(Arrays.toString(row2[0]), new String[]{"-b", ",", "-a, --alpha <otherField>", "other"}, row2[0]);
     }
@@ -192,12 +190,12 @@ public class CommandLineHelpTest {
     @Test
     public void testDefaultOptionRenderer_rendersCommaOnlyIfBothShortAndLongOptionNamesExist() {
         class Example {
-            @Option(names = {"-v"}, description = "shortBool") boolean shortBoolean;
-            @Option(names = {"--verbose"}, description = "longBool") boolean longBoolean;
-            @Option(names = {"-x", "--xeno"}, description = "combiBool") boolean combiBoolean;
-            @Option(names = {"-s"}, description = "shortOnly") String shortOnlyField;
-            @Option(names = {"--long"}, description = "longOnly") String longOnlyField;
-            @Option(names = {"-b", "--beta"}, description = "combi") String combiField;
+            @CommandLine.Parameter(names = {"-v"}, description = "shortBool") boolean shortBoolean;
+            @CommandLine.Parameter(names = {"--verbose"}, description = "longBool") boolean longBoolean;
+            @CommandLine.Parameter(names = {"-x", "--xeno"}, description = "combiBool") boolean combiBoolean;
+            @CommandLine.Parameter(names = {"-s"}, description = "shortOnly") String shortOnlyField;
+            @CommandLine.Parameter(names = {"--long"}, description = "longOnly") String longOnlyField;
+            @CommandLine.Parameter(names = {"-b", "--beta"}, description = "combi") String combiField;
         }
         Help.IOptionRenderer renderer = Help.createDefaultOptionRenderer();
         Help.IParameterLabelRenderer parameterRenderer = Help.createDefaultParameterRenderer(" ");
@@ -213,7 +211,7 @@ public class CommandLineHelpTest {
         };
         int i = -1;
         for (Field field : help.optionFields) {
-            String[][] row = renderer.render(field.getAnnotation(Option.class), field, parameterRenderer);
+            String[][] row = renderer.render(field.getAnnotation(CommandLine.Parameter.class), field, parameterRenderer);
             assertEquals(1, row.length);
             assertArrayEquals(Arrays.toString(row[0]), expected[++i], row[0]);
         }
@@ -227,8 +225,8 @@ public class CommandLineHelpTest {
     @Test
     public void testDefaultParameterRenderer_showsParamLabelIfPresentOrFieldNameOtherwise() {
         class Example {
-            @Option(names = "--without" ) String longField;
-            @Option(names = "--with", paramLabel = "LABEL") String otherField;
+            @CommandLine.Parameter(names = "--without" ) String longField;
+            @CommandLine.Parameter(names = "--with", paramLabel = "LABEL") String otherField;
         }
         Help.IParameterLabelRenderer spaceSeparatedParameterRenderer = Help.createDefaultParameterRenderer(" ");
         Help.IParameterLabelRenderer equalSeparatedParameterRenderer = Help.createDefaultParameterRenderer("=");
@@ -250,8 +248,8 @@ public class CommandLineHelpTest {
 
     @Test
     public void testDefaultParameterRenderer_appliesToPositionalArgumentsIgnoresSeparator() {
-        class WithLabel    { @Parameters(paramLabel = "POSITIONAL_ARGS") String positional; }
-        class WithoutLabel { @Parameters()                               String positional; }
+        class WithLabel    { @picocli.CommandLine.Parameter(paramLabel = "POSITIONAL_ARGS") String positional; }
+        class WithoutLabel { @picocli.CommandLine.Parameter()                               String positional; }
         Help.IParameterLabelRenderer spaced = Help.createDefaultParameterRenderer(" ");
         Help.IParameterLabelRenderer equals = Help.createDefaultParameterRenderer("=");
 
@@ -289,9 +287,9 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DefaultOptionSummary_withoutParameters() {
         @Usage class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}) int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}) int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -301,10 +299,11 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DefaultOptionSummary_withParameters() {
         @Usage class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}) int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
-            @Parameters File[] files;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}) int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @picocli.CommandLine.Parameter
+            File[] files;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -314,9 +313,9 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_optionalOptionArity1_n_withoutSeparator() {
         @Usage(detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}, arity = "1..*") int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}, arity = "1..*") int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -326,9 +325,9 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_optionalOptionArity0_1_withoutSeparator() {
         @Usage(detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}, arity = "0..1") int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}, arity = "0..1") int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -338,9 +337,9 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_requiredOptionWithoutSeparator() {
         @Usage(detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}, required = true) int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}, required = true) int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -350,9 +349,9 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_optionalOption_withSeparator() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}) int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}) int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -362,9 +361,9 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_optionalOptionArity0_1__withSeparator() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}, arity = "0..1") int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}, arity = "0..1") int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -374,9 +373,9 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_optionalOptionArity0_n__withSeparator() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}, arity = "0..*") int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}, arity = "0..*") int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -386,9 +385,9 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_optionalOptionArity1_n__withSeparator() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}, arity = "1..*") int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}, arity = "1..*") int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -398,10 +397,11 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_withSeparator_withParameters() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}) int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
-            @Parameters File[] files;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}) int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @picocli.CommandLine.Parameter
+            File[] files;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -411,10 +411,10 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_withSeparator_withLabeledParameters() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}) int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
-            @Parameters(paramLabel = "FILE") File[] files;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}) int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @picocli.CommandLine.Parameter(paramLabel = "FILE") File[] files;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -424,10 +424,10 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_withSeparator_withLabeledRequiredParameters() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--count", "-c"}) int count;
-            @Option(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
-            @Parameters(paramLabel = "FILE", arity = "1..*") File[] files;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--count", "-c"}) int count;
+            @CommandLine.Parameter(names = {"--help", "-h"}, hidden = true) boolean helpRequested;
+            @picocli.CommandLine.Parameter(paramLabel = "FILE", arity = "1..*") File[] files;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -437,10 +437,10 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_clustersBooleanOptions() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--aaaa", "-a"}) boolean aBoolean;
-            @Option(names = {"--xxxx", "-x"}) Boolean xBoolean;
-            @Option(names = {"--count", "-c"}, paramLabel = "COUNT") int count;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--aaaa", "-a"}) boolean aBoolean;
+            @CommandLine.Parameter(names = {"--xxxx", "-x"}) Boolean xBoolean;
+            @CommandLine.Parameter(names = {"--count", "-c"}, paramLabel = "COUNT") int count;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -450,10 +450,10 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_clustersRequiredBooleanOptions() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}, required = true) boolean verbose;
-            @Option(names = {"--aaaa", "-a"}, required = true) boolean aBoolean;
-            @Option(names = {"--xxxx", "-x"}, required = true) Boolean xBoolean;
-            @Option(names = {"--count", "-c"}, paramLabel = "COUNT") int count;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}, required = true) boolean verbose;
+            @CommandLine.Parameter(names = {"--aaaa", "-a"}, required = true) boolean aBoolean;
+            @CommandLine.Parameter(names = {"--xxxx", "-x"}, required = true) Boolean xBoolean;
+            @CommandLine.Parameter(names = {"--count", "-c"}, paramLabel = "COUNT") int count;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -463,13 +463,13 @@ public class CommandLineHelpTest {
     @Test
     public void testAppendUsageTo_DetailedOptionSummary_clustersRequiredBooleanOptionsSeparately() {
         @Usage(separator = "=", detailedUsageHeader = true) class App {
-            @Option(names = {"--verbose", "-v"}) boolean verbose;
-            @Option(names = {"--aaaa", "-a"}) boolean aBoolean;
-            @Option(names = {"--xxxx", "-x"}) Boolean xBoolean;
-            @Option(names = {"--Verbose", "-V"}, required = true) boolean requiredVerbose;
-            @Option(names = {"--Aaaa", "-A"}, required = true) boolean requiredABoolean;
-            @Option(names = {"--Xxxx", "-X"}, required = true) Boolean requiredXBoolean;
-            @Option(names = {"--count", "-c"}, paramLabel = "COUNT") int count;
+            @CommandLine.Parameter(names = {"--verbose", "-v"}) boolean verbose;
+            @CommandLine.Parameter(names = {"--aaaa", "-a"}) boolean aBoolean;
+            @CommandLine.Parameter(names = {"--xxxx", "-x"}) Boolean xBoolean;
+            @CommandLine.Parameter(names = {"--Verbose", "-V"}, required = true) boolean requiredVerbose;
+            @CommandLine.Parameter(names = {"--Aaaa", "-A"}, required = true) boolean requiredABoolean;
+            @CommandLine.Parameter(names = {"--Xxxx", "-X"}, required = true) Boolean requiredXBoolean;
+            @CommandLine.Parameter(names = {"--count", "-c"}, paramLabel = "COUNT") int count;
         }
         StringBuilder sb = new StringBuilder();
         new Help(App.class).appendUsageTo(sb);
@@ -528,19 +528,19 @@ public class CommandLineHelpTest {
                 summary = "Concatenate FILE(s), or standard input, to standard output.",
                 footer = "Copyright(c) 2017")
         class Cat {
-            @Parameters(paramLabel = "FILE",              description = "Files whose contents to display") List<File> files;
-            @Option(names = "--help",    help = true,     description = "display this help and exit") boolean help;
-            @Option(names = "--version", help = true,     description = "output version information and exit") boolean version;
-            @Option(names = "-u",                         description = "(ignored)") boolean u;
-            @Option(names = "-t",                         description = "equivalent to -vT") boolean t;
-            @Option(names = "-e",                         description = "equivalent to -vET") boolean e;
-            @Option(names = {"-A", "--show-all"},         description = "equivalent to -vET") boolean showAll;
-            @Option(names = {"-s", "--squeeze-blank"},    description = "suppress repeated empty output lines") boolean squeeze;
-            @Option(names = {"-v", "--show-nonprinting"}, description = "use ^ and M- notation, except for LDF and TAB") boolean v;
-            @Option(names = {"-b", "--number-nonblank"},  description = "number nonempty output lines, overrides -n") boolean b;
-            @Option(names = {"-T", "--show-tabs"},        description = "display TAB characters as ^I") boolean T;
-            @Option(names = {"-E", "--show-ends"},        description = "display $ at end of each line") boolean E;
-            @Option(names = {"-n", "--number"},           description = "number all output lines") boolean n;
+            @picocli.CommandLine.Parameter(paramLabel = "FILE",              description = "Files whose contents to display") List<File> files;
+            @CommandLine.Parameter(names = "--help",    help = true,     description = "display this help and exit") boolean help;
+            @CommandLine.Parameter(names = "--version", help = true,     description = "output version information and exit") boolean version;
+            @CommandLine.Parameter(names = "-u",                         description = "(ignored)") boolean u;
+            @CommandLine.Parameter(names = "-t",                         description = "equivalent to -vT") boolean t;
+            @CommandLine.Parameter(names = "-e",                         description = "equivalent to -vET") boolean e;
+            @CommandLine.Parameter(names = {"-A", "--show-all"},         description = "equivalent to -vET") boolean showAll;
+            @CommandLine.Parameter(names = {"-s", "--squeeze-blank"},    description = "suppress repeated empty output lines") boolean squeeze;
+            @CommandLine.Parameter(names = {"-v", "--show-nonprinting"}, description = "use ^ and M- notation, except for LDF and TAB") boolean v;
+            @CommandLine.Parameter(names = {"-b", "--number-nonblank"},  description = "number nonempty output lines, overrides -n") boolean b;
+            @CommandLine.Parameter(names = {"-T", "--show-tabs"},        description = "display TAB characters as ^I") boolean T;
+            @CommandLine.Parameter(names = {"-E", "--show-ends"},        description = "display $ at end of each line") boolean E;
+            @CommandLine.Parameter(names = {"-n", "--number"},           description = "number all output lines") boolean n;
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         CommandLine.usage(Cat.class, new PrintStream(baos));
@@ -574,34 +574,34 @@ public class CommandLineHelpTest {
                 "  If zipfile and list are omitted, zip compresses stdin to stdout."}
         )
         class Zip {
-            @Option(names = "-f", description = "freshen: only changed files") boolean freshen;
-            @Option(names = "-u", description = "update: only changed or new files") boolean update;
-            @Option(names = "-d", description = "delete entries in zipfile") boolean delete;
-            @Option(names = "-m", description = "move into zipfile (delete OS files)") boolean move;
-            @Option(names = "-r", description = "recurse into directories") boolean recurse;
-            @Option(names = "-j", description = "junk (don't record) directory names") boolean junk;
-            @Option(names = "-0", description = "store only") boolean store;
-            @Option(names = "-l", description = "convert LF to CR LF (-ll CR LF to LF)") boolean lf2crlf;
-            @Option(names = "-1", description = "compress faster") boolean faster;
-            @Option(names = "-9", description = "compress better") boolean better;
-            @Option(names = "-q", description = "quiet operation") boolean quiet;
-            @Option(names = "-v", description = "verbose operation/print version info") boolean verbose;
-            @Option(names = "-c", description = "add one-line comments") boolean comments;
-            @Option(names = "-z", description = "add zipfile comment") boolean zipComment;
-            @Option(names = "-@", description = "read names from stdin") boolean readFileList;
-            @Option(names = "-o", description = "make zipfile as old as latest entry") boolean old;
-            @Option(names = "-x", description = "exclude the following names") boolean exclude;
-            @Option(names = "-i", description = "include only the following names") boolean include;
-            @Option(names = "-F", description = "fix zipfile (-FF try harder)") boolean fix;
-            @Option(names = "-D", description = "do not add directory entries") boolean directories;
-            @Option(names = "-A", description = "adjust self-extracting exe") boolean adjust;
-            @Option(names = "-J", description = "junk zipfile prefix (unzipsfx)") boolean junkPrefix;
-            @Option(names = "-T", description = "test zipfile integrity") boolean test;
-            @Option(names = "-X", description = "eXclude eXtra file attributes") boolean excludeAttribs;
-            @Option(names = "-y", description = "store symbolic links as the link instead of the referenced file") boolean symbolic;
-            @Option(names = "-e", description = "encrypt") boolean encrypt;
-            @Option(names = "-n", description = "don't compress these suffixes") boolean dontCompress;
-            @Option(names = "-h2", description = "show more help") boolean moreHelp;
+            @CommandLine.Parameter(names = "-f", description = "freshen: only changed files") boolean freshen;
+            @CommandLine.Parameter(names = "-u", description = "update: only changed or new files") boolean update;
+            @CommandLine.Parameter(names = "-d", description = "delete entries in zipfile") boolean delete;
+            @CommandLine.Parameter(names = "-m", description = "move into zipfile (delete OS files)") boolean move;
+            @CommandLine.Parameter(names = "-r", description = "recurse into directories") boolean recurse;
+            @CommandLine.Parameter(names = "-j", description = "junk (don't record) directory names") boolean junk;
+            @CommandLine.Parameter(names = "-0", description = "store only") boolean store;
+            @CommandLine.Parameter(names = "-l", description = "convert LF to CR LF (-ll CR LF to LF)") boolean lf2crlf;
+            @CommandLine.Parameter(names = "-1", description = "compress faster") boolean faster;
+            @CommandLine.Parameter(names = "-9", description = "compress better") boolean better;
+            @CommandLine.Parameter(names = "-q", description = "quiet operation") boolean quiet;
+            @CommandLine.Parameter(names = "-v", description = "verbose operation/print version info") boolean verbose;
+            @CommandLine.Parameter(names = "-c", description = "add one-line comments") boolean comments;
+            @CommandLine.Parameter(names = "-z", description = "add zipfile comment") boolean zipComment;
+            @CommandLine.Parameter(names = "-@", description = "read names from stdin") boolean readFileList;
+            @CommandLine.Parameter(names = "-o", description = "make zipfile as old as latest entry") boolean old;
+            @CommandLine.Parameter(names = "-x", description = "exclude the following names") boolean exclude;
+            @CommandLine.Parameter(names = "-i", description = "include only the following names") boolean include;
+            @CommandLine.Parameter(names = "-F", description = "fix zipfile (-FF try harder)") boolean fix;
+            @CommandLine.Parameter(names = "-D", description = "do not add directory entries") boolean directories;
+            @CommandLine.Parameter(names = "-A", description = "adjust self-extracting exe") boolean adjust;
+            @CommandLine.Parameter(names = "-J", description = "junk zipfile prefix (unzipsfx)") boolean junkPrefix;
+            @CommandLine.Parameter(names = "-T", description = "test zipfile integrity") boolean test;
+            @CommandLine.Parameter(names = "-X", description = "eXclude eXtra file attributes") boolean excludeAttribs;
+            @CommandLine.Parameter(names = "-y", description = "store symbolic links as the link instead of the referenced file") boolean symbolic;
+            @CommandLine.Parameter(names = "-e", description = "encrypt") boolean encrypt;
+            @CommandLine.Parameter(names = "-n", description = "don't compress these suffixes") boolean dontCompress;
+            @CommandLine.Parameter(names = "-h2", description = "show more help") boolean moreHelp;
         }
         String expected  = String.format("" +
                 "Copyright (c) 1990-2008 Info-ZIP - Type 'zip \"-L\"' for software license.%n" +
@@ -635,11 +635,11 @@ public class CommandLineHelpTest {
         textTable.optionRenderer = Help.createMinimalOptionRenderer(); // define and install a custom renderer
         textTable.layout = new Help.ILayout() { // define and install a custom layout
             Point previous = new Point(0, 0);
-            public void layout(Option option, Field field, String[][] values, TextTable table) {
+            public void layout(CommandLine.Parameter parameter, Field field, String[][] values, TextTable table) {
                 String[] columnValues = values[0]; // we know renderer creates a single row with two values
 
                 // We want to show two options on one row, next to each other,
-                // unless the first option spanned multiple columns (in which case there are not enough columns left)
+                // unless the first parameter spanned multiple columns (in which case there are not enough columns left)
                 int col = previous.x + 1;
                 if (col == 1 || col + columnValues.length > table.columns.length) { // if true, write into next row
 
@@ -659,9 +659,9 @@ public class CommandLineHelpTest {
         // we add Options to the textTable to build up the option details help text.
         // Note that we don't sort the options, so they appear in the order the fields are declared in the Zip class.
         for (Field field : help.optionFields) {
-            Option option = field.getAnnotation(Option.class);
-            if (!option.hidden()) {
-                textTable.addOption(option, field);
+            CommandLine.Parameter parameter = field.getAnnotation(CommandLine.Parameter.class);
+            if (!parameter.hidden()) {
+                textTable.addOption(parameter, field);
             }
         }
         textTable.toString(sb); // finally, copy the options details help text into the StringBuilder
@@ -677,9 +677,9 @@ public class CommandLineHelpTest {
                 detailedUsageHeader = true,
                 summary = {"Displays protocol statistics and current TCP/IP network connections.", ""})
         class Netstat {
-            @Option(names="-a", description="Displays all connections and listening ports.")
+            @CommandLine.Parameter(names="-a", description="Displays all connections and listening ports.")
             boolean displayAll;
-            @Option(names="-b", description="Displays the executable involved in creating each connection or "
+            @CommandLine.Parameter(names="-b", description="Displays the executable involved in creating each connection or "
                     + "listening port. In some cases well-known executables host "
                     + "multiple independent components, and in these cases the "
                     + "sequence of components involved in creating the connection "
@@ -689,38 +689,38 @@ public class CommandLineHelpTest {
                     + "can be time-consuming and will fail unless you have sufficient "
                     + "permissions.")
             boolean displayExecutable;
-            @Option(names="-e", description="Displays Ethernet statistics. This may be combined with the -s option.")
+            @CommandLine.Parameter(names="-e", description="Displays Ethernet statistics. This may be combined with the -s option.")
             boolean displayEthernetStats;
-            @Option(names="-f", description="Displays Fully Qualified Domain Names (FQDN) for foreign addresses.")
+            @CommandLine.Parameter(names="-f", description="Displays Fully Qualified Domain Names (FQDN) for foreign addresses.")
             boolean displayFQCN;
-            @Option(names="-n", description="Displays addresses and port numbers in numerical form.")
+            @CommandLine.Parameter(names="-n", description="Displays addresses and port numbers in numerical form.")
             boolean displayNumerical;
-            @Option(names="-o", description="Displays the owning process ID associated with each connection.")
+            @CommandLine.Parameter(names="-o", description="Displays the owning process ID associated with each connection.")
             boolean displayOwningProcess;
-            @Option(names="-p", paramLabel = "proto",
+            @CommandLine.Parameter(names="-p", paramLabel = "proto",
                     description="Shows connections for the protocol specified by proto; proto "
                     + "may be any of: TCP, UDP, TCPv6, or UDPv6.  If used with the -s "
                     + "option to display per-protocol statistics, proto may be any of: "
                     + "IP, IPv6, ICMP, ICMPv6, TCP, TCPv6, UDP, or UDPv6.")
             Protocol proto;
-            @Option(names="-q", description="Displays all connections, listening ports, and bound "
+            @CommandLine.Parameter(names="-q", description="Displays all connections, listening ports, and bound "
                     + "nonlistening TCP ports. Bound nonlistening ports may or may not "
                     + "be associated with an active connection.")
             boolean query;
-            @Option(names="-r", description="Displays the routing table.")
+            @CommandLine.Parameter(names="-r", description="Displays the routing table.")
             boolean displayRoutingTable;
-            @Option(names="-s", description="Displays per-protocol statistics.  By default, statistics are "
+            @CommandLine.Parameter(names="-s", description="Displays per-protocol statistics.  By default, statistics are "
                     + "shown for IP, IPv6, ICMP, ICMPv6, TCP, TCPv6, UDP, and UDPv6; "
                     + "the -p option may be used to specify a subset of the default.")
             boolean displayStatistics;
-            @Option(names="-t", description="Displays the current connection offload state.")
+            @CommandLine.Parameter(names="-t", description="Displays the current connection offload state.")
             boolean displayOffloadState;
-            @Option(names="-x", description="Displays NetworkDirect connections, listeners, and shared endpoints.")
+            @CommandLine.Parameter(names="-x", description="Displays NetworkDirect connections, listeners, and shared endpoints.")
             boolean displayNetDirect;
-            @Option(names="-y", description="Displays the TCP connection template for all connections. "
+            @CommandLine.Parameter(names="-y", description="Displays the TCP connection template for all connections. "
                     + "Cannot be combined with the other options.")
             boolean displayTcpConnectionTemplate;
-            @Parameters(arity = "0..1", paramLabel = "interval", description = ""
+            @picocli.CommandLine.Parameter(arity = "0..1", paramLabel = "interval", description = ""
                     + "Redisplays selected statistics, pausing interval seconds "
                     + "between each display.  Press CTRL+C to stop redisplaying "
                     + "statistics.  If omitted, netstat will print the current "
@@ -736,16 +736,15 @@ public class CommandLineHelpTest {
                 new Column(15, 2, TRUNCATE),
                 new Column(65, 1, WRAP));
         textTable.optionRenderer = Help.createMinimalOptionRenderer();
-        textTable.parameterRenderer = Help.createMinimalParameterRenderer();
         textTable.parameterLabelRenderer = help.parameterLabelRenderer;
         textTable.indentWrappedLines = 0;
         for (Field field : help.optionFields) {
-            textTable.addOption(field.getAnnotation(Option.class), field);
+            textTable.addOption(field.getAnnotation(CommandLine.Parameter.class), field);
         }
-        textTable.addPositionalParameter(help.positionalParametersField.getAnnotation(Parameters.class),
+        textTable.addPositionalParameter(help.positionalParametersField.getAnnotation(picocli.CommandLine.Parameter.class),
                 help.positionalParametersField);
         // FIXME needs Show positional parameters details in TextTable similar to option details #48
-        // textTable.addOption(help.positionalParametersField.getAnnotation(CommandLine.Parameters.class), help.positionalParametersField);
+        // textTable.addOption(help.positionalParametersField.getAnnotation(CommandLine.Parameter.class), help.positionalParametersField);
         textTable.toString(sb);
         String expected = String.format("" +
                 "Displays protocol statistics and current TCP/IP network connections.%n" +

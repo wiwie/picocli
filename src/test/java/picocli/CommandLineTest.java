@@ -72,8 +72,8 @@ import static picocli.CommandLine.*;
 // DONE long options with argument separate by space
 // DONE long options with argument separated by '=' (no spaces)
 // TODO document that if arity>1 and args="-opt=val1 val2", arity overrules the "=": both values are assigned
-// TODO test superclass bean and child class bean where child class field shadows super class and have same annotation Option name
-// TODO test superclass bean and child class bean where child class field shadows super class and have different annotation Option name
+// TODO test superclass bean and child class bean where child class field shadows super class and have same annotation Parameter name
+// TODO test superclass bean and child class bean where child class field shadows super class and have different annotation Parameter name
 // DONE -vrx, -vro outputFile, -vrooutputFile, -vro=outputFile, -vro:outputFile, -vro=, -vro:, -vro
 // DONE --out outputFile, --out=outputFile, --out:outputFile, --out=, --out:, --out
 public class CommandLineTest {
@@ -83,36 +83,36 @@ public class CommandLineTest {
     }
 
     private static class SupportedTypes {
-        @Option(names = "-boolean")       boolean booleanField;
-        @Option(names = "-Boolean")       Boolean aBooleanField;
-        @Option(names = "-byte")          byte byteField;
-        @Option(names = "-Byte")          Byte aByteField;
-        @Option(names = "-char")          char charField;
-        @Option(names = "-Character")     Character aCharacterField;
-        @Option(names = "-short")         short shortField;
-        @Option(names = "-Short")         Short aShortField;
-        @Option(names = "-int")           int intField;
-        @Option(names = "-Integer")       Integer anIntegerField;
-        @Option(names = "-long")          long longField;
-        @Option(names = "-Long")          Long aLongField;
-        @Option(names = "-float")         float floatField;
-        @Option(names = "-Float")         Float aFloatField;
-        @Option(names = "-double")        double doubleField;
-        @Option(names = "-Double")        Double aDoubleField;
-        @Option(names = "-String")        String aStringField;
-        @Option(names = "-StringBuilder") StringBuilder aStringBuilderField;
-        @Option(names = "-CharSequence")  CharSequence aCharSequenceField;
-        @Option(names = "-File")          File aFileField;
-        @Option(names = "-URL")           URL anURLField;
-        @Option(names = "-URI")           URI anURIField;
-        @Option(names = "-Date")          Date aDateField;
-        @Option(names = "-Time")          Time aTimeField;
-        @Option(names = "-BigDecimal")    BigDecimal aBigDecimalField;
-        @Option(names = "-BigInteger")    BigInteger aBigIntegerField;
-        @Option(names = "-Charset")       Charset aCharsetField;
-        @Option(names = "-InetAddress")   InetAddress anInetAddressField;
-        @Option(names = "-Pattern")       Pattern aPatternField;
-        @Option(names = "-UUID")          UUID anUUIDField;
+        @CommandLine.Parameter(names = "-boolean")       boolean booleanField;
+        @CommandLine.Parameter(names = "-Boolean")       Boolean aBooleanField;
+        @CommandLine.Parameter(names = "-byte")          byte byteField;
+        @CommandLine.Parameter(names = "-Byte")          Byte aByteField;
+        @CommandLine.Parameter(names = "-char")          char charField;
+        @CommandLine.Parameter(names = "-Character")     Character aCharacterField;
+        @CommandLine.Parameter(names = "-short")         short shortField;
+        @CommandLine.Parameter(names = "-Short")         Short aShortField;
+        @CommandLine.Parameter(names = "-int")           int intField;
+        @CommandLine.Parameter(names = "-Integer")       Integer anIntegerField;
+        @CommandLine.Parameter(names = "-long")          long longField;
+        @CommandLine.Parameter(names = "-Long")          Long aLongField;
+        @CommandLine.Parameter(names = "-float")         float floatField;
+        @CommandLine.Parameter(names = "-Float")         Float aFloatField;
+        @CommandLine.Parameter(names = "-double")        double doubleField;
+        @CommandLine.Parameter(names = "-Double")        Double aDoubleField;
+        @CommandLine.Parameter(names = "-String")        String aStringField;
+        @CommandLine.Parameter(names = "-StringBuilder") StringBuilder aStringBuilderField;
+        @CommandLine.Parameter(names = "-CharSequence")  CharSequence aCharSequenceField;
+        @CommandLine.Parameter(names = "-File")          File aFileField;
+        @CommandLine.Parameter(names = "-URL")           URL anURLField;
+        @CommandLine.Parameter(names = "-URI")           URI anURIField;
+        @CommandLine.Parameter(names = "-Date")          Date aDateField;
+        @CommandLine.Parameter(names = "-Time")          Time aTimeField;
+        @CommandLine.Parameter(names = "-BigDecimal")    BigDecimal aBigDecimalField;
+        @CommandLine.Parameter(names = "-BigInteger")    BigInteger aBigIntegerField;
+        @CommandLine.Parameter(names = "-Charset")       Charset aCharsetField;
+        @CommandLine.Parameter(names = "-InetAddress")   InetAddress anInetAddressField;
+        @CommandLine.Parameter(names = "-Pattern")       Pattern aPatternField;
+        @CommandLine.Parameter(names = "-UUID")          UUID anUUIDField;
     }
     @Test
     public void testDefaults() {
@@ -385,9 +385,9 @@ public class CommandLineTest {
     }
 
     static class EnumParams {
-        @Option(names = "-timeUnit") TimeUnit timeUnit;
-        @Option(names = "-timeUnitArray", arity = "2") TimeUnit[] timeUnitArray;
-        @Option(names = "-timeUnitList", type = TimeUnit.class, arity = "3") List<TimeUnit> timeUnitList;
+        @CommandLine.Parameter(names = "-timeUnit") TimeUnit timeUnit;
+        @CommandLine.Parameter(names = "-timeUnitArray", arity = "2") TimeUnit[] timeUnitArray;
+        @CommandLine.Parameter(names = "-timeUnitList", type = TimeUnit.class, arity = "3") List<TimeUnit> timeUnitList;
     }
     @Test
     public void testEnumTypeConversionSuceedsForValidInput() {
@@ -462,7 +462,7 @@ public class CommandLineTest {
     @Test
     public void testArrayPositionalParametersAreAlwaysInstantiated() {
         class ArrayPositionalParams {
-            @Parameters() int[] array;
+            @picocli.CommandLine.Parameter() int[] array;
         }
         ArrayPositionalParams params = new ArrayPositionalParams();
         params.array = new int[3];
@@ -472,7 +472,7 @@ public class CommandLineTest {
         assertArrayEquals(new int[]{3, 2, 1}, params.array);
     }
     class ListPositionalParams {
-        @Parameters(type = Integer.class) List<Integer> list;
+        @picocli.CommandLine.Parameter(type = Integer.class) List<Integer> list;
     }
     @Test
     public void testListPositionalParametersAreInstantiatedIfNull() {
@@ -496,24 +496,14 @@ public class CommandLineTest {
     public void testDuplicateOptionsAreRejected() {
         /** Duplicate parameter names are invalid. */
         class DuplicateOptions {
-            @Option(names = "-duplicate") public int value1;
-            @Option(names = "-duplicate") public int value2;
+            @CommandLine.Parameter(names = "-duplicate") public int value1;
+            @CommandLine.Parameter(names = "-duplicate") public int value2;
         }
         new CommandLine(new DuplicateOptions());
     }
 
-    @Test(expected = ParameterException.class)
-    public void testClashingAnnotationsAreRejected() {
-        class ClashingAnnotation {
-            @Option(names = "-o")
-            @Parameters
-            public String[] bothOptionAndParameters;
-        }
-        new CommandLine(new ClashingAnnotation());
-    }
-
     private static class FinalFields {
-        @Option(names = "-f") private final String field = null;
+        @CommandLine.Parameter(names = "-f") private final String field = null;
     }
     @Test
     public void testCanInitializeFinalFields() {
@@ -527,8 +517,8 @@ public class CommandLineTest {
     }
 
     private static class RequiredField {
-        @Option(names = {"-h", "--help", "-?", "/?"}, help = true) boolean isHelpRequested;
-        @Option(names = "--required", required = true) private String required;
+        @CommandLine.Parameter(names = {"-h", "--help", "-?", "/?"}, help = true) boolean isHelpRequested;
+        @CommandLine.Parameter(names = "--required", required = true) private String required;
     }
     @Test
     public void testErrorIfRequiredOptionNotSpecified() {
@@ -582,10 +572,11 @@ public class CommandLineTest {
     }
 
     private class CompactFields {
-        @Option(names = "-v") boolean verbose;
-        @Option(names = "-r") boolean recursive;
-        @Option(names = "-o") File outputFile;
-        @Parameters File[] inputFiles;
+        @CommandLine.Parameter(names = "-v") boolean verbose;
+        @CommandLine.Parameter(names = "-r") boolean recursive;
+        @CommandLine.Parameter(names = "-o") File outputFile;
+        @picocli.CommandLine.Parameter
+        File[] inputFiles;
     }
     @Test
     public void testCompactFieldsAnyOrder() {
@@ -709,7 +700,8 @@ public class CommandLineTest {
     @Test
     public void testPrimitiveParameters() {
         class PrimitiveIntParameters {
-            @Parameters int[] intParams;
+            @picocli.CommandLine.Parameter
+            int[] intParams;
         }
         PrimitiveIntParameters params = CommandLine.parse(new PrimitiveIntParameters(), "1 2 3 4".split(" "));
         assertArrayEquals(new int[] {1, 2, 3, 4}, params.intParams);
@@ -751,28 +743,30 @@ public class CommandLineTest {
     }
     @Test
     public void testArityForOption_listFieldImplicitArity0_n() throws Exception {
-        class ImplicitList { @Option(names = "-a") List<Integer> listIntegers; }
+        class ImplicitList { @CommandLine.Parameter(names = "-a") List<Integer> listIntegers; }
         Arity arity = Arity.forOption(ImplicitList.class.getDeclaredField("listIntegers"));
         assertEquals(Arity.valueOf("0..*"), arity);
         assertEquals("0..*", arity.toString());
     }
     @Test
     public void testArityForOption_arrayFieldImplicitArity0_n() throws Exception {
-        class ImplicitList { @Option(names = "-a") int[] intArray; }
+        class ImplicitList { @CommandLine.Parameter(names = "-a") int[] intArray; }
         Arity arity = Arity.forOption(ImplicitList.class.getDeclaredField("intArray"));
         assertEquals(Arity.valueOf("0..*"), arity);
         assertEquals("0..*", arity.toString());
     }
     @Test
     public void testArityForParameters_booleanFieldImplicitArity0() throws Exception {
-        class ImplicitBoolField { @Parameters boolean boolSingleValue; }
+        class ImplicitBoolField { @picocli.CommandLine.Parameter
+        boolean boolSingleValue; }
         Arity arity = Arity.forParameters(ImplicitBoolField.class.getDeclaredField("boolSingleValue"));
         assertEquals(Arity.valueOf("0"), arity);
         assertEquals("0", arity.toString());
     }
     @Test
     public void testArityForParameters_intFieldImplicitArity1() throws Exception {
-        class ImplicitSingleField { @Parameters int intSingleValue; }
+        class ImplicitSingleField { @picocli.CommandLine.Parameter
+        int intSingleValue; }
         Arity arity = Arity.forParameters(ImplicitSingleField.class.getDeclaredField("intSingleValue"));
         assertEquals(Arity.valueOf("1"), arity);
         assertEquals("1", arity.toString());
@@ -793,8 +787,9 @@ public class CommandLineTest {
     public void testArrayOptionsWithArity0_nConsumeAllArguments() {
         final double[] DEFAULT_PARAMS = new double[] {1, 2};
         class ArrayOptionsArity0_nAndParameters {
-            @Parameters double[] doubleParams = DEFAULT_PARAMS;
-            @Option(names = "-doubles", arity = "0..*") double[] doubleOptions;
+            @picocli.CommandLine.Parameter
+            double[] doubleParams = DEFAULT_PARAMS;
+            @CommandLine.Parameter(names = "-doubles", arity = "0..*") double[] doubleOptions;
         }
         ArrayOptionsArity0_nAndParameters
                 params = CommandLine.parse(new ArrayOptionsArity0_nAndParameters(), "-doubles 1.1 2.2 3.3 4.4".split(" "));
@@ -806,8 +801,9 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionsWithArity1_nConsumeAllArguments() {
         class ArrayOptionsArity1_nAndParameters {
-            @Parameters double[] doubleParams;
-            @Option(names = "-doubles", arity = "1..*") double[] doubleOptions;
+            @picocli.CommandLine.Parameter
+            double[] doubleParams;
+            @CommandLine.Parameter(names = "-doubles", arity = "1..*") double[] doubleOptions;
         }
         ArrayOptionsArity1_nAndParameters
                 params = CommandLine.parse(new ArrayOptionsArity1_nAndParameters(), "-doubles 1.1 2.2 3.3 4.4".split(" "));
@@ -819,8 +815,9 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionsWithArity2_nConsumeAllArguments() {
         class ArrayOptionsArity2_nAndParameters {
-            @Parameters double[] doubleParams;
-            @Option(names = "-doubles", arity = "2..*") double[] doubleOptions;
+            @picocli.CommandLine.Parameter
+            double[] doubleParams;
+            @CommandLine.Parameter(names = "-doubles", arity = "2..*") double[] doubleOptions;
         }
         ArrayOptionsArity2_nAndParameters
                 params = CommandLine.parse(new ArrayOptionsArity2_nAndParameters(), "-doubles 1.1 2.2 3.3 4.4".split(" "));
@@ -832,10 +829,11 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionArity2_nConsumesAllArgumentsUpToClusteredOption() {
         class ArrayOptionsArity2_nAndParameters {
-            @Parameters String[] stringParams;
-            @Option(names = "-s", arity = "2..*") String[] stringOptions;
-            @Option(names = "-v") boolean verbose;
-            @Option(names = "-f") File file;
+            @picocli.CommandLine.Parameter
+            String[] stringParams;
+            @CommandLine.Parameter(names = "-s", arity = "2..*") String[] stringOptions;
+            @CommandLine.Parameter(names = "-v") boolean verbose;
+            @CommandLine.Parameter(names = "-f") File file;
         }
         ArrayOptionsArity2_nAndParameters
                 params = CommandLine.parse(new ArrayOptionsArity2_nAndParameters(), "-s 1.1 2.2 3.3 4.4 -vfFILE 5.5".split(" "));
@@ -849,10 +847,11 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionArity2_nConsumesAllArgumentIncludingQuotedSimpleOption() {
         class ArrayOptionArity2_nAndParameters {
-            @Parameters String[] stringParams;
-            @Option(names = "-s", arity = "2..*") String[] stringOptions;
-            @Option(names = "-v") boolean verbose;
-            @Option(names = "-f") File file;
+            @picocli.CommandLine.Parameter
+            String[] stringParams;
+            @CommandLine.Parameter(names = "-s", arity = "2..*") String[] stringOptions;
+            @CommandLine.Parameter(names = "-v") boolean verbose;
+            @CommandLine.Parameter(names = "-f") File file;
         }
         ArrayOptionArity2_nAndParameters
                 params = CommandLine.parse(new ArrayOptionArity2_nAndParameters(), "-s 1.1 2.2 3.3 4.4 \"-v\" \"-f\" \"FILE\" 5.5".split(" "));
@@ -866,10 +865,11 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionArity2_nConsumesAllArgumentIncludingQuotedClusteredOption() {
         class ArrayOptionArity2_nAndParameters {
-            @Parameters String[] stringParams;
-            @Option(names = "-s", arity = "2..*") String[] stringOptions;
-            @Option(names = "-v") boolean verbose;
-            @Option(names = "-f") File file;
+            @picocli.CommandLine.Parameter
+            String[] stringParams;
+            @CommandLine.Parameter(names = "-s", arity = "2..*") String[] stringOptions;
+            @CommandLine.Parameter(names = "-v") boolean verbose;
+            @CommandLine.Parameter(names = "-f") File file;
         }
         ArrayOptionArity2_nAndParameters
                 params = CommandLine.parse(new ArrayOptionArity2_nAndParameters(), "-s 1.1 2.2 3.3 4.4 \"-vfFILE\" 5.5".split(" "));
@@ -883,10 +883,11 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionArity2_nConsumesAllArgumentsUpToNextSimpleOption() {
         class ArrayOptionArity2_nAndParameters {
-            @Parameters double[] doubleParams;
-            @Option(names = "-s", arity = "2..*") String[] stringOptions;
-            @Option(names = "-v") boolean verbose;
-            @Option(names = "-f") File file;
+            @picocli.CommandLine.Parameter
+            double[] doubleParams;
+            @CommandLine.Parameter(names = "-s", arity = "2..*") String[] stringOptions;
+            @CommandLine.Parameter(names = "-v") boolean verbose;
+            @CommandLine.Parameter(names = "-f") File file;
         }
         ArrayOptionArity2_nAndParameters
                 params = CommandLine.parse(new ArrayOptionArity2_nAndParameters(), "-s 1.1 2.2 3.3 4.4 -v -f=FILE 5.5".split(" "));
@@ -900,10 +901,11 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionArity2_nConsumesAllArgumentsUpToNextOptionWithAttachment() {
         class ArrayOptionArity2_nAndParameters {
-            @Parameters double[] doubleParams;
-            @Option(names = "-s", arity = "2..*") String[] stringOptions;
-            @Option(names = "-v") boolean verbose;
-            @Option(names = "-f") File file;
+            @picocli.CommandLine.Parameter
+            double[] doubleParams;
+            @CommandLine.Parameter(names = "-s", arity = "2..*") String[] stringOptions;
+            @CommandLine.Parameter(names = "-v") boolean verbose;
+            @CommandLine.Parameter(names = "-f") File file;
         }
         ArrayOptionArity2_nAndParameters
                 params = CommandLine.parse(new ArrayOptionArity2_nAndParameters(), "-s 1.1 2.2 3.3 4.4 -f=FILE -v 5.5".split(" "));
@@ -917,8 +919,9 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionArityNConsumeAllArguments() {
         class ArrayOptionArityNAndParameters {
-            @Parameters char[] charParams;
-            @Option(names = "-chars", arity = "*") char[] charOptions;
+            @picocli.CommandLine.Parameter
+            char[] charParams;
+            @CommandLine.Parameter(names = "-chars", arity = "*") char[] charOptions;
         }
         ArrayOptionArityNAndParameters
                 params = CommandLine.parse(new ArrayOptionArityNAndParameters(), "-chars a b c d".split(" "));
@@ -928,10 +931,11 @@ public class CommandLineTest {
     }
 
     private static class BooleanOptionsArity0_nAndParameters {
-        @Parameters String[] params;
-        @Option(names = "-bool", arity = "0..*") boolean bool;
-        @Option(names = {"-v", "-other"}, arity="0..*") boolean vOrOther;
-        @Option(names = "-r") boolean rBoolean;
+        @picocli.CommandLine.Parameter
+        String[] params;
+        @CommandLine.Parameter(names = "-bool", arity = "0..*") boolean bool;
+        @CommandLine.Parameter(names = {"-v", "-other"}, arity="0..*") boolean vOrOther;
+        @CommandLine.Parameter(names = "-r") boolean rBoolean;
     }
     @Test
     public void testBooleanOptionsArity0_nConsume1ArgumentIfPossible() { // ignores varargs
@@ -990,8 +994,9 @@ public class CommandLineTest {
     }
 
     private static class BooleanOptionsArity1_nAndParameters {
-        @Parameters boolean[] boolParams;
-        @Option(names = "-bool", arity = "1..*") boolean aBoolean;
+        @picocli.CommandLine.Parameter
+        boolean[] boolParams;
+        @CommandLine.Parameter(names = "-bool", arity = "1..*") boolean aBoolean;
     }
     @Test
     public void testBooleanOptionsArity1_nConsume1Argument() { // ignores varargs
@@ -1032,8 +1037,9 @@ public class CommandLineTest {
     @Test
     public void testBooleanOptionArity0Consumes0Arguments() {
         class BooleanOptionArity0AndParameters {
-            @Parameters boolean[] boolParams;
-            @Option(names = "-bool", arity = "0") boolean aBoolean;
+            @picocli.CommandLine.Parameter
+            boolean[] boolParams;
+            @CommandLine.Parameter(names = "-bool", arity = "0") boolean aBoolean;
         }
         BooleanOptionArity0AndParameters
                 params = CommandLine.parse(new BooleanOptionArity0AndParameters(), "-bool true false true".split(" "));
@@ -1044,8 +1050,9 @@ public class CommandLineTest {
     @Test
     public void testIntOptionArity1_nConsumes1Argument() { // ignores varargs
         class IntOptionArity1_nAndParameters {
-            @Parameters int[] intParams;
-            @Option(names = "-int", arity = "1..*") int anInt;
+            @picocli.CommandLine.Parameter
+            int[] intParams;
+            @CommandLine.Parameter(names = "-int", arity = "1..*") int anInt;
         }
         IntOptionArity1_nAndParameters
                 params = CommandLine.parse(new IntOptionArity1_nAndParameters(), "-int 23 42 7".split(" "));
@@ -1056,8 +1063,9 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionsWithArity0Consume0Arguments() {
         class OptionsArray0ArityAndParameters {
-            @Parameters double[] doubleParams;
-            @Option(names = "-doubles", arity = "0") double[] doubleOptions;
+            @picocli.CommandLine.Parameter
+            double[] doubleParams;
+            @CommandLine.Parameter(names = "-doubles", arity = "0") double[] doubleOptions;
         }
         OptionsArray0ArityAndParameters
                 params = CommandLine.parse(new OptionsArray0ArityAndParameters(), "-doubles 1.1 2.2 3.3 4.4".split(" "));
@@ -1069,8 +1077,9 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionWithArity1Consumes1Argument() {
         class Options1ArityAndParameters {
-            @Parameters double[] doubleParams;
-            @Option(names = "-doubles", arity = "1") double[] doubleOptions;
+            @picocli.CommandLine.Parameter
+            double[] doubleParams;
+            @CommandLine.Parameter(names = "-doubles", arity = "1") double[] doubleOptions;
         }
         Options1ArityAndParameters
                 params = CommandLine.parse(new Options1ArityAndParameters(), "-doubles 1.1 2.2 3.3 4.4".split(" "));
@@ -1080,8 +1089,9 @@ public class CommandLineTest {
     }
 
     private static class ArrayOptionArity2AndParameters {
-        @Parameters double[] doubleParams;
-        @Option(names = "-doubles", arity = "2") double[] doubleOptions;
+        @picocli.CommandLine.Parameter
+        double[] doubleParams;
+        @CommandLine.Parameter(names = "-doubles", arity = "2") double[] doubleOptions;
     }
     @Test
     public void testArrayOptionWithArity2Consumes2Arguments() {
@@ -1103,8 +1113,9 @@ public class CommandLineTest {
     @Test
     public void testArrayOptionWithoutArityConsumesAllArguments() {
         class OptionsNoArityAndParameters {
-            @Parameters char[] charParams;
-            @Option(names = "-chars") char[] charOptions;
+            @picocli.CommandLine.Parameter
+            char[] charParams;
+            @CommandLine.Parameter(names = "-chars") char[] charOptions;
         }
         OptionsNoArityAndParameters
                 params = CommandLine.parse(new OptionsNoArityAndParameters(), "-chars a b c d".split(" "));
@@ -1116,7 +1127,7 @@ public class CommandLineTest {
     @Test(expected = MissingTypeConverterException.class)
     public void testMissingTypeConverter() {
         class MissingConverter {
-            @Option(names = "--socket") Socket socket;
+            @CommandLine.Parameter(names = "--socket") Socket socket;
         }
         CommandLine.parse(new MissingConverter(), "--socket anyString".split(" "));
     }
@@ -1124,7 +1135,7 @@ public class CommandLineTest {
     @Test
     public void testArrayParametersWithArityMinusOneToN() {
         class ArrayParamsNegativeArity {
-            @Parameters(arity = "-1..*")
+            @picocli.CommandLine.Parameter(arity = "-1..*")
             List<String> params;
         }
         ArrayParamsNegativeArity params = CommandLine.parse(new ArrayParamsNegativeArity(), "a", "b", "c");
@@ -1140,7 +1151,7 @@ public class CommandLineTest {
     @Test
     public void testArrayParametersArity0_n() {
         class ArrayParamsArity0_n {
-            @Parameters(arity = "0..*")
+            @picocli.CommandLine.Parameter(arity = "0..*")
             List<String> params;
         }
         ArrayParamsArity0_n params = CommandLine.parse(new ArrayParamsArity0_n(), "a", "b", "c");
@@ -1156,7 +1167,7 @@ public class CommandLineTest {
     @Test
     public void testArrayParametersArity1_n() {
         class ArrayParamsArity1_n {
-            @Parameters(arity = "1..*")
+            @picocli.CommandLine.Parameter(arity = "1..*")
             List<String> params;
         }
         ArrayParamsArity1_n params = CommandLine.parse(new ArrayParamsArity1_n(), "a", "b", "c");
@@ -1176,7 +1187,7 @@ public class CommandLineTest {
     @Test
     public void testArrayParametersArity2_n() {
         class ArrayParamsArity2_n {
-            @Parameters(arity = "2..*")
+            @picocli.CommandLine.Parameter(arity = "2..*")
             List<String> params;
         }
         ArrayParamsArity2_n params = CommandLine.parse(new ArrayParamsArity2_n(), "a", "b", "c");
@@ -1200,7 +1211,7 @@ public class CommandLineTest {
     @Test
     public void testNonVarargArrayParametersWithNegativeArityConsumesZeroArguments() {
         class NonVarArgArrayParamsNegativeArity {
-            @Parameters(arity = "-1")
+            @picocli.CommandLine.Parameter(arity = "-1")
             List<String> params;
         }
         NonVarArgArrayParamsNegativeArity params = CommandLine.parse(new NonVarArgArrayParamsNegativeArity(), "a", "b", "c");
@@ -1216,7 +1227,7 @@ public class CommandLineTest {
     @Test
     public void testNonVarargArrayParametersWithArity0() {
         class NonVarArgArrayParamsZeroArity {
-            @Parameters(arity = "0")
+            @picocli.CommandLine.Parameter(arity = "0")
             List<String> params;
         }
         NonVarArgArrayParamsZeroArity params = CommandLine.parse(new NonVarArgArrayParamsZeroArity(), "a", "b", "c");
@@ -1232,7 +1243,7 @@ public class CommandLineTest {
     @Test
     public void testNonVarargArrayParametersWithArity1() {
         class NonVarArgArrayParamsArity1 {
-            @Parameters(arity = "1")
+            @picocli.CommandLine.Parameter(arity = "1")
             List<String> params;
         }
         NonVarArgArrayParamsArity1 params = CommandLine.parse(new NonVarArgArrayParamsArity1(), "a", "b", "c");
@@ -1252,7 +1263,7 @@ public class CommandLineTest {
     @Test
     public void testNonVarargArrayParametersWithArity2() {
         class NonVarArgArrayParamsArity2 {
-            @Parameters(arity = "2")
+            @picocli.CommandLine.Parameter(arity = "2")
             List<String> params;
         }
         NonVarArgArrayParamsArity2 params = CommandLine.parse(new NonVarArgArrayParamsArity2(), "a", "b", "c");
@@ -1274,14 +1285,14 @@ public class CommandLineTest {
     }
 
     class VariousPrefixCharacters {
-        @Option(names = {"-d", "--dash"}) int dash;
-        @Option(names = {"/S"}) int slashS;
-        @Option(names = {"/T"}) int slashT;
-        @Option(names = {"/4"}) boolean fourDigit;
-        @Option(names = {"/Owner", "--owner"}) String owner;
-        @Option(names = {"-SingleDash"}) boolean singleDash;
-        @Option(names = {"[CPM"}) String cpm;
-        @Option(names = {"(CMS"}) String cms;
+        @CommandLine.Parameter(names = {"-d", "--dash"}) int dash;
+        @CommandLine.Parameter(names = {"/S"}) int slashS;
+        @CommandLine.Parameter(names = {"/T"}) int slashT;
+        @CommandLine.Parameter(names = {"/4"}) boolean fourDigit;
+        @CommandLine.Parameter(names = {"/Owner", "--owner"}) String owner;
+        @CommandLine.Parameter(names = {"-SingleDash"}) boolean singleDash;
+        @CommandLine.Parameter(names = {"[CPM"}) String cpm;
+        @CommandLine.Parameter(names = {"(CMS"}) String cms;
     }
     @Test
     public void testOptionsMayDefineAnyPrefixChar() {
@@ -1380,7 +1391,7 @@ public class CommandLineTest {
     @Test
     public void testPotentiallyNestedOptionParsedCorrectly() {
         class MyOption {
-            @CommandLine.Option(names = "-p") String path;
+            @CommandLine.Parameter(names = "-p") String path;
         }
         MyOption opt = CommandLine.parse(new MyOption(), "-pa-p");
         assertEquals("a-p", opt.path);
@@ -1392,8 +1403,8 @@ public class CommandLineTest {
     @Test
     public void testArityGreaterThanOneForSingleValuedFields() {
         class Arity2 {
-            @CommandLine.Option(names = "-p", arity="2") String path;
-            @CommandLine.Option(names = "-o", arity="2") String[] otherPath;
+            @CommandLine.Parameter(names = "-p", arity="2") String path;
+            @CommandLine.Parameter(names = "-o", arity="2") String[] otherPath;
         }
         Arity2 opt = CommandLine.parse(new Arity2(), "-o a b".split(" "));
 
@@ -1404,7 +1415,7 @@ public class CommandLineTest {
     @Test
     public void testOptionParameterQuotesRemovedFromValue() {
         class TextOption {
-            @CommandLine.Option(names = "-t") String text;
+            @CommandLine.Parameter(names = "-t") String text;
         }
         TextOption opt = CommandLine.parse(new TextOption(), "-t", "\"a text\"");
         assertEquals("a text", opt.text);
@@ -1413,7 +1424,7 @@ public class CommandLineTest {
     @Test
     public void testLongOptionAttachedQuotedParameterQuotesRemovedFromValue() {
         class TextOption {
-            @CommandLine.Option(names = "--text") String text;
+            @CommandLine.Parameter(names = "--text") String text;
         }
         TextOption opt = CommandLine.parse(new TextOption(), "--text=\"a text\"");
         assertEquals("a text", opt.text);
@@ -1422,7 +1433,7 @@ public class CommandLineTest {
     @Test
     public void testShortOptionAttachedQuotedParameterQuotesRemovedFromValue() {
         class TextOption {
-            @CommandLine.Option(names = "-t") String text;
+            @CommandLine.Parameter(names = "-t") String text;
         }
         TextOption opt = CommandLine.parse(new TextOption(), "-t\"a text\"");
         assertEquals("a text", opt.text);
@@ -1434,8 +1445,8 @@ public class CommandLineTest {
     @Test
     public void testShortOptionQuotedParameterTypeConversion() {
         class TextOption {
-            @CommandLine.Option(names = "-t") int[] number;
-            @CommandLine.Option(names = "-v", arity = "1") boolean verbose;
+            @CommandLine.Parameter(names = "-t") int[] number;
+            @CommandLine.Parameter(names = "-v", arity = "1") boolean verbose;
         }
         TextOption opt = CommandLine.parse(new TextOption(), "-t", "\"123\"", "-v", "\"true\"");
         assertEquals(123, opt.number[0]);
@@ -1453,7 +1464,7 @@ public class CommandLineTest {
     @Test
     public void testOptionMultiParameterQuotesRemovedFromValue() {
         class TextOption {
-            @CommandLine.Option(names = "-t") String[] text;
+            @CommandLine.Parameter(names = "-t") String[] text;
         }
         TextOption opt = CommandLine.parse(new TextOption(), "-t", "\"a text\"", "\"another text\"", "\"x z\"");
         assertArrayEquals(new String[]{"a text", "another text", "x z"}, opt.text);
@@ -1468,7 +1479,7 @@ public class CommandLineTest {
     @Test
     public void testPositionalParameterQuotesRemovedFromValue() {
         class TextParams {
-            @CommandLine.Parameters() String[] text;
+            @picocli.CommandLine.Parameter() String[] text;
         }
         TextParams opt = CommandLine.parse(new TextParams(), "\"a text\"");
         assertEquals("a text", opt.text[0]);
@@ -1477,7 +1488,7 @@ public class CommandLineTest {
     @Test
     public void testPositionalMultiParameterQuotesRemovedFromValue() {
         class TextParams {
-            @CommandLine.Parameters() String[] text;
+            @picocli.CommandLine.Parameter() String[] text;
         }
         TextParams opt = CommandLine.parse(new TextParams(), "\"a text\"", "\"another text\"", "\"x z\"");
         assertArrayEquals(new String[]{"a text", "another text", "x z"}, opt.text);
@@ -1486,7 +1497,7 @@ public class CommandLineTest {
     @Test
     public void testPositionalMultiQuotedParameterTypeConversion() {
         class TextParams {
-            @CommandLine.Parameters() int[] numbers;
+            @picocli.CommandLine.Parameter() int[] numbers;
         }
         TextParams opt = CommandLine.parse(new TextParams(), "\"123\"", "\"456\"", "\"999\"");
         assertArrayEquals(new int[]{123, 456, 999}, opt.numbers);
@@ -1495,10 +1506,10 @@ public class CommandLineTest {
     @Test
     public void testSubclassedOptions() {
         class ParentOption {
-            @CommandLine.Option(names = "-p") String path;
+            @CommandLine.Parameter(names = "-p") String path;
         }
         class ChildOption extends ParentOption {
-            @CommandLine.Option(names = "-t") String text;
+            @CommandLine.Parameter(names = "-t") String text;
         }
         ChildOption opt = CommandLine.parse(new ChildOption(), "-p", "somePath", "-t", "\"a text\"");
         assertEquals("somePath", opt.path);
@@ -1508,26 +1519,26 @@ public class CommandLineTest {
     @Test
     public void testSubclassedOptionsWithShadowedOptionNameThrowsDuplicateOptionAnnotationsException() {
         class ParentOption {
-            @CommandLine.Option(names = "-p") String path;
+            @CommandLine.Parameter(names = "-p") String path;
         }
         class ChildOption extends ParentOption {
-            @CommandLine.Option(names = "-p") String text;
+            @CommandLine.Parameter(names = "-p") String text;
         }
         try {
             CommandLine.parse(new ChildOption(), "");
             fail("expected CommandLine$DuplicateOptionAnnotationsException");
         } catch (DuplicateOptionAnnotationsException ex) {
-            assertEquals("Option name '-p' is used in both path and text", ex.getMessage());
+            assertEquals("Parameter name '-p' is used in both path and text", ex.getMessage());
         }
     }
 
     @Test
     public void testSubclassedOptionsWithShadowedFieldInitializesChildField() {
         class ParentOption {
-            @CommandLine.Option(names = "-parentPath") String path;
+            @CommandLine.Parameter(names = "-parentPath") String path;
         }
         class ChildOption extends ParentOption {
-            @CommandLine.Option(names = "-childPath") String path;
+            @CommandLine.Parameter(names = "-childPath") String path;
         }
         ChildOption opt = CommandLine.parse(new ChildOption(), "-childPath", "somePath");
         assertEquals("somePath", opt.path);
