@@ -149,7 +149,7 @@ public class CommandLineHelpTest {
             @CommandLine.Parameter(names = {"-b", "-a", "--alpha"}, description = "other") String otherField;
         }
         Help.IOptionRenderer renderer = Help.createMinimalOptionRenderer();
-        Help.IParameterLabelRenderer parameterRenderer = Help.createDefaultParameterRenderer(" ");
+        Help.IParameterLabelRenderer parameterRenderer = Help.createDefaultParameterLabelRenderer(" ");
         Help help = new Help(Example.class);
         Field field = help.optionFields.get(0);
         String[][] row1 = renderer.render(field.getAnnotation(CommandLine.Parameter.class), field, parameterRenderer);
@@ -174,7 +174,7 @@ public class CommandLineHelpTest {
             @CommandLine.Parameter(names = {"-b", "-a", "--alpha"}, description = "other") String otherField;
         }
         Help.IOptionRenderer renderer = Help.createDefaultOptionRenderer();
-        Help.IParameterLabelRenderer parameterRenderer = Help.createDefaultParameterRenderer(" ");
+        Help.IParameterLabelRenderer parameterRenderer = Help.createDefaultParameterLabelRenderer(" ");
         Help help = new Help(Example.class);
         Field field = help.optionFields.get(0);
         String[][] row1 = renderer.render(field.getAnnotation(CommandLine.Parameter.class), field, parameterRenderer);
@@ -198,7 +198,7 @@ public class CommandLineHelpTest {
             @CommandLine.Parameter(names = {"-b", "--beta"}, description = "combi") String combiField;
         }
         Help.IOptionRenderer renderer = Help.createDefaultOptionRenderer();
-        Help.IParameterLabelRenderer parameterRenderer = Help.createDefaultParameterRenderer(" ");
+        Help.IParameterLabelRenderer parameterRenderer = Help.createDefaultParameterLabelRenderer(" ");
         Help help = new Help(Example.class);
 
         String[][] expected = new String[][] {
@@ -219,7 +219,7 @@ public class CommandLineHelpTest {
 
     @Test
     public void testCreateDefaultParameterRenderer_ReturnsDefaultParameterRenderer() {
-        assertEquals(Help.DefaultParameterLabelRenderer.class, Help.createDefaultParameterRenderer("=").getClass());
+        assertEquals(Help.DefaultParameterLabelRenderer.class, Help.createDefaultParameterLabelRenderer("=").getClass());
     }
 
     @Test
@@ -228,8 +228,8 @@ public class CommandLineHelpTest {
             @CommandLine.Parameter(names = "--without" ) String longField;
             @CommandLine.Parameter(names = "--with", paramLabel = "LABEL") String otherField;
         }
-        Help.IParameterLabelRenderer spaceSeparatedParameterRenderer = Help.createDefaultParameterRenderer(" ");
-        Help.IParameterLabelRenderer equalSeparatedParameterRenderer = Help.createDefaultParameterRenderer("=");
+        Help.IParameterLabelRenderer spaceSeparatedParameterRenderer = Help.createDefaultParameterLabelRenderer(" ");
+        Help.IParameterLabelRenderer equalSeparatedParameterRenderer = Help.createDefaultParameterLabelRenderer("=");
         Help help = new Help(Example.class);
 
         String[] expected = new String[] {
@@ -250,8 +250,8 @@ public class CommandLineHelpTest {
     public void testDefaultParameterRenderer_appliesToPositionalArgumentsIgnoresSeparator() {
         class WithLabel    { @picocli.CommandLine.Parameter(paramLabel = "POSITIONAL_ARGS") String positional; }
         class WithoutLabel { @picocli.CommandLine.Parameter()                               String positional; }
-        Help.IParameterLabelRenderer spaced = Help.createDefaultParameterRenderer(" ");
-        Help.IParameterLabelRenderer equals = Help.createDefaultParameterRenderer("=");
+        Help.IParameterLabelRenderer spaced = Help.createDefaultParameterLabelRenderer(" ");
+        Help.IParameterLabelRenderer equals = Help.createDefaultParameterLabelRenderer("=");
 
         Help withLabel = new Help(WithLabel.class);
         String withSpace = spaced.renderParameterLabel(withLabel.positionalParametersField);
@@ -741,6 +741,7 @@ public class CommandLineHelpTest {
         for (Field field : help.optionFields) {
             textTable.addOption(field.getAnnotation(CommandLine.Parameter.class), field);
         }
+        textTable.parameterLabelRenderer = Help.createMinimalParameterLabelRenderer();
         textTable.addPositionalParameter(help.positionalParametersField.getAnnotation(picocli.CommandLine.Parameter.class),
                 help.positionalParametersField);
         // FIXME needs Show positional parameters details in TextTable similar to option details #48

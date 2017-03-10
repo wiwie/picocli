@@ -1417,7 +1417,7 @@ public class CommandLine {
                         parameter = positionalParametersField.getAnnotation(picocli.CommandLine.Parameter.class);
                 if (!parameter.hidden()) {
                     TextTable textTable = new TextTable();
-                    textTable.parameterLabelRenderer = this.parameterLabelRenderer;
+                    textTable.parameterLabelRenderer = createMinimalParameterLabelRenderer();
                     textTable.addPositionalParameter(parameter, positionalParametersField);
                 }
             }
@@ -1479,13 +1479,24 @@ public class CommandLine {
         public static IOptionRenderer createMinimalOptionRenderer() {
             return new MinimalOptionRenderer();
         }
-        /** Returns a new default parameter renderer that separates option parameters from their {@linkplain Parameter
-         * options} with the specified separator string, surrounds optional parameters with {@code '['} and {@code ']'}
-         * characters and uses ellipses ("...") to indicate that any number of a parameter are allowed.
+        /** Returns a new default parameter label renderer that separates option parameters from their {@linkplain
+         * Parameter options} with the specified separator string, surrounds optional parameters with {@code '['} and
+         * {@code ']'} characters and uses ellipses ("...") to indicate that any number of a parameter are allowed.
          * @param separator string that separates options from option parameters
          */
-        public static IParameterLabelRenderer createDefaultParameterRenderer(String separator) {
+        public static IParameterLabelRenderer createDefaultParameterLabelRenderer(String separator) {
             return new DefaultParameterLabelRenderer(separator);
+        }
+        /** Returns a new minimal parameter label renderer that only returns the {@linkplain Parameter#paramLabel()
+         * paramLabel} of the field's {@code @Parameter} annotation, or the field name if no {@code paramLabel}
+         * attribute is specified. */
+        public static IParameterLabelRenderer createMinimalParameterLabelRenderer() {
+            return new IParameterLabelRenderer() {
+                public String renderParameterLabel(Field field) {
+                    String label = field.getAnnotation(Parameter.class).paramLabel();
+                    return label == null ? field.getName() : label;
+                }
+            };
         }
         /** Returns a new default Layout which displays each array of text values representing an Parameter on a separate
          * row in the {@linkplain TextTable TextTable}. */
