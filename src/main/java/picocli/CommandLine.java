@@ -2390,17 +2390,8 @@ public class CommandLine {
             Class<?> type = getTypeAttribute(field)[0];
             int length = collection == null ? 0 : collection.size();
             List<Object> converted = consumeArguments(field, annotation, arity, args, type, length, argDescription);
-            if (collection == null) {
-                collection = createCollection(cls);
-                field.set(command, collection);
-            }
-            for (Object element : converted) {
-                if (element instanceof Collection<?>) {
-                    collection.addAll((Collection<?>) element);
-                } else {
-                    collection.add(element);
-                }
-            }
+            collection = createCollection(cls);
+            field.set(command, collection);
             return converted.size();
         }
 
