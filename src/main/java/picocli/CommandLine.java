@@ -2392,6 +2392,13 @@ public class CommandLine {
             List<Object> converted = consumeArguments(field, annotation, arity, args, type, length, argDescription);
             collection = createCollection(cls);
             field.set(command, collection);
+            for (Object element : converted) {
+                if (element instanceof Collection<?>) {
+                    collection.addAll((Collection<?>) element);
+                } else {
+                    collection.add(element);
+                }
+            }
             return converted.size();
         }
 
